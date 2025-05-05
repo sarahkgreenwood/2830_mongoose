@@ -1,0 +1,4 @@
+Database – MongoDB with Mongoose (40 points)
+● At least 2 well-defined Mongoose models with proper schema and validation – 10 pts
+● Full implementation of CRUD (Create, Read, Update, Delete) – 20 pts
+● Initial data or seed functionality is available for testing – 10 pts
