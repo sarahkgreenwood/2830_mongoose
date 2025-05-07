@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Delete Me</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="post.js"></script>
+</head>
+
+<body class="flex-body">
+<nav class="navbar flex-navbar"></nav>
+
+<!-- Create -->
+<button id="revealCr">Create New Post</button><br>
+<div id="createSection" class="hidden flex-container">
+<div class="flex-item">
+    <h2>Create a New Post</h2>
+    <form id="createForm">
+        <p><label>Dish Name? </label><input type="text" name="dishname" id="dishname"></p>
+        <p><label>Ingredients? </label><input type="text" name="ingredients" id="ingredients"></p>
+        <p><label>Upload Date? </label><input type="date" name="uploadDate" id="uploadDate"></p>
+        <input type="submit" value="Save">
+    </form>
+</div>
+</div>
+
+  <!-- see posts from database -->
+<button id="fetchPosts">See Posts from Database</button>
+<div id="postsDisplay"></div>
+
+  <!-- Update -->
+<button id="revealUp">Update a Previous Post</button><br>
+<div id="updateSection" class="hidden flex-container">
+<div class="flex-item">
+    <h2>Update a Previous Post</h2>
+    <form id="updateForm">
+        <input type="text" id="updateId" placeholder="Post ID to update"><br>
+        <input type="text" id="updateDishname" placeholder="New Dish Name"><br>
+        <input type="text" id="updateIngredients" placeholder="New Ingredients"><br>
+        <input type="date" id="updateDate"><br>
+        <input type="submit" value="Update Post">
+        </form>          
+</div>
+</div>
+
+  <!-- Delete -->
+<button id="revealDel">Delete a Previous Post</button><br>
+<div id="deleteSection" class="hidden flex-container">
+<div class="flex-item">
+    <h2>Delete a Previous Post</h2>
+    <form id="deleteForm">
+        <input type="text" id="deleteId" placeholder="Post ID to delete">
+        <input type="submit" value="Delete Post">
+        </form>          
+</div>
+</div>
+
+  <!-- Display -->
+<div class="flex-container">
+<div class="flex-item">
+    <h2>See Posts</h2>
+    <p>=============================================</p>
+    <p><span id="display"></span></p>
+</div>
+</div>
+
+<!-- JavaScript -->
+<script>
+    // Toggle sections
+    document.getElementById("revealCr").addEventListener("click", function () {
+        document.getElementById("createSection").classList.toggle("hidden");
+    });
+
+    document.getElementById("revealUp").addEventListener("click", function () {
+        document.getElementById("updateSection").classList.toggle("hidden");
+    });
+
+    document.getElementById("revealDel").addEventListener("click", function () {
+        document.getElementById("deleteSection").classList.toggle("hidden");
+    });
+
+    // Show input on form submission without reloading
+    document.getElementById("createForm").addEventListener("submit", function (e) {
+        e.preventDefault(); // Prevent form from submitting to server
+
+        const dishname = document.getElementById("dishname").value;
+        const ingredients = document.getElementById("ingredients").value;
+        const uploadDate = document.getElementById("uploadDate").value;
+
+        const output = `
+        <strong>Dish:</strong> ${dishname} <br>
+        <strong>Ingredients:</strong> ${ingredients} <br>
+        <strong>Upload Date:</strong> ${uploadDate}
+        `;
+        document.getElementById("display").innerHTML = output;
+        //reset form after submission
+        this.reset();
+    });
+
+    document.getElementById("fetchPosts").addEventListener("click", async function () {
+    try {
+        const res = await fetch("/posts");
+        if (!res.ok) throw new Error("Failed to fetch posts");
+
+        const posts = await res.json();
+        const display = document.getElementById("postsDisplay");
+
+    if (posts.length === 0) {
+        display.innerHTML = "<p>No posts found.</p>";
+        return;
+    }
+
+    // Render posts
+    display.innerHTML = posts.map(post => `
+        <div class="post">
+            <h3>${post.dishname}</h3>
+            <p><strong>Ingredients:</strong> ${post.ingredients}</p>
+            <p><strong>Upload Date:</strong> ${new Date(post.uploadDate).toLocaleDateString()}</p>
+            <hr>
+        </div>
+        `).join("");
+    } catch (err) {
+        console.error(err);
+        document.getElementById("postsDisplay").innerHTML = "<p>Error loading posts.</p>";
+    }
+});
+</script>
+</body>
+</html>
